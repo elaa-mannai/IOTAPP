@@ -1,30 +1,40 @@
 import { StatusBar } from 'expo-status-bar';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const Homescreen = ({navigation}) => {
+const Homescreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to IOT Application</Text>
+      <View style={styles.fixed}>
+        <Text style={styles.title}>Welcome to IOT Application</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Text style={styles.profile}>Profile</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.fixed} >
         <View style={styles.col}>
-          <TouchableOpacity style={styles.box} onPress={()=>navigation.navigate('Temp')}>
+          <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Temp')}>
             <Image style={styles.image} source={require("../assets/temperature.png")} />
           </TouchableOpacity>
           <Text>Temperature</Text>
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Footstep')}>
             <Image style={styles.image} source={require("../assets/footstep.png")} />
           </TouchableOpacity>
           <Text>Walking</Text>
+          <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Poumon')}>
+            <Image style={styles.image} source={require("../assets/poumons.png")} />
+          </TouchableOpacity>
+          <Text>Respiration</Text>
         </View>
         <View style={styles.col}>
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Oxygen')}>
             <Image style={styles.image} source={require("../assets/oxygen-tank.png")} />
           </TouchableOpacity>
           <Text>Oxygen</Text>
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Hypertention')}>
             <Image style={styles.image} source={require("../assets/hypertension.png")} />
           </TouchableOpacity>
           <Text>Hypertension</Text>
+
         </View>
       </View>
       <StatusBar style="auto" />
@@ -41,15 +51,22 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 60,
-    color: "cornflowerblue",
+    color: "darkturquoise",
     fontSize: 24,
     fontWeight: "bold",
     alignItems: "flex-start",
   },
+  profile: {
+    marginTop: 30,
+    color: "dodgerblue",
+    fontSize: 18,
+    fontWeight: "bold",
+    alignItems: "flex-end",
+  },
   box: {
     alignContent: "flex-start",
     alignItems: 'flex-start',
-    borderColor: 'blue',
+    borderColor: 'darkturquoise',
     padding: 10,
     margin: 5,
     borderWidth: 2,

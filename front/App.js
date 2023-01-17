@@ -1,14 +1,18 @@
 
-
-
-
 import { StatusBar } from 'expo-status-bar';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React, { useState, createContext, useContext, useEffect, Profiler } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Homescreen from './src/Homescreen';
 import Temp from './src/Temp';
+import Footstep from './src/Footstep';
+import Oxygen from './src/Oxygen';
+import Hypertention from './src/Hypertention';
+import Poumon from './src/Poumon';
+import Login from './src/Login';
+import Signup from './src/Signup';
+import Profile from './src/Profile';
 
 
 
@@ -18,33 +22,21 @@ export default function App() {
   return (
     <NavigationContainer>
     <Stack.Navigator>
+    <Stack.Screen name="Login" component={Login}options={{ headerShown: false }}/>
+    <Stack.Screen name='Signup' component={Signup} options={{headerShown:false}} />
     <Stack.Screen name="Home" component={Homescreen} options={{ headerShown: false }} />
     <Stack.Screen name="Temp" component={Temp}/>
+    <Stack.Screen name="Footstep" component={Footstep}/>
+    <Stack.Screen name="Oxygen" component={Oxygen}/>
+    <Stack.Screen name="Hypertention" component={Hypertention}/>
+    <Stack.Screen name="Poumon" component={Poumon} options={{headerTitle:"Respiration"}}/>
+    <Stack.Screen name="Profile" component={Profile}/>
 
     </Stack.Navigator>
     </NavigationContainer>
  
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -68,14 +60,14 @@ const client = new pahoMqtt.Client(
 export default function App() {
   const [newTopic, setNewTopic] = useState("");
   const [subscribedTopics, setSubscribedTopics] = useState([
-    { name: "hc/temp", messages: [] },
-    { name: "hc/freq", messages: [] },
-    { name: "hc/steps", messages: [] },
-    { name: "hc/o2", messages: [] },
-    { name: "hc/pres", messages: [] },
+    { name: "temp", messages: [] },
+    { name: "freq", messages: [] },
+    { name: "steps", messages: [] },
+    { name: "o2", messages: [] },
+    { name: "pres", messages: [] },
   ]);
   const onMessage = (data) => {
-    console.log(subscribedTopics);
+ //   console.log(subscribedTopics);
     const foundIndex = subscribedTopics.findIndex(
       (x) => x.name == data.destinationName
     );
@@ -86,7 +78,7 @@ export default function App() {
         value: data.payloadString,
         date: new Date(),
       });
-      console.log(cpy);
+    //  console.log(cpy);
 
       setSubscribedTopics(cpy);
     }
@@ -104,9 +96,9 @@ export default function App() {
     });
   }, []);
 
-  const [msg, setMsg] = useState("initial msg");   
+  const [msg, setMsg] = useState("initial msg");
 
-   return (
+     return (
      <ScrollView style={{ marginTop: StatusBar.currentHeight }}>
            <Text style={{ alignSelf: "center" }}>Welcome to my MQTT!</Text>
            <TextInput

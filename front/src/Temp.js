@@ -4,174 +4,52 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  StatusBar,
+  Image,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+
 const client = new pahoMqtt.Client(
   "broker.hivemq.com",
   Number(8000),
   `mqtt-random-${parseInt(Math.random() * 100)}`
 );
 
- 
+
 const Temp = () => {
 
-
-
-    const [subscribedTopics, setSubscribedTopics] = useState([
-      { name: "hc/temp", messages: [] },
-    ]);
-    const onMessage = (data) => {
-      console.log(subscribedTopics);
-      const foundIndex = subscribedTopics.findIndex(
-        (x) => x.name == data.destinationName
-      );
-      console.log(foundIndex);
-      if (foundIndex != -1) {
-        const cpy = [...subscribedTopics];
-        cpy[foundIndex].messages.push({
-          value: data.payloadString,
-          date: new Date(),
-        });
-        console.log(cpy);
-  
-        setSubscribedTopics(cpy);
-      }
-    };
-    client.onMessageArrived = onMessage;
-    useEffect(() => {
-      client.connect({
-        onSuccess: () => {
-          console.log("connected succefully");
-          subscribedTopics.forEach((el) => client.subscribe(el.name));
-        },
-        onFailure: () => {
-          console.log("Connection failed");
-        },
-      });
-    }, []);  
-  
-  
-
-    return (
-        <View style={{ height: 500 }}>
-            <ScrollView
-                horizontal
-                style={{ display: "flex", flexDirection: "row" }}
-            >
-                {subscribedTopics.map((el, i) => (
-                    <View
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            borderWidth: 1,
-                            borderRadius: 10,
-                            marginRight: 5,
-                            marginTop: 10,
-                            marginLeft: 5,
-                            padding: 10,
-                        }}
-                        key={i}
-                    >
-{/*                         <Text style={{ color: "bleu", fontWeight: "500" }}>{el.name}</Text>
- */}
-                        <ScrollView>
-                            {el.messages.map((data, index) => (
-                                <View
-                                    style={{
-                                        borderWidth: 1,
-                                        padding: 5,
-                                        borderRadius: 5,
-                                        backgroundColor: "#efefef",
-                                        marginTop: 10,
-                                    }}
-                                    key={index}
-                                >
-                                    <Text>
-                                        value :{" "}
-                                        <Text style={{ fontSize: 17, fontWeight: "700" }}>
-                                            {data.value}
-                                        </Text>
-                                    </Text>
-                                    <Text>
-                                        {new Date(data.date).toLocaleDateString() +
-                                            " " +
-                                            new Date(data.date).toLocaleTimeString()}
-                                    </Text>
-                                </View>
-                            ))}
-                        </ScrollView>
-                    </View>
-                ))}
-            </ScrollView>
-        </View>
-    )
-
-}
-
-export default Temp
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-});
-
-
-
-
-/* import pahoMqtt from "paho-mqtt";
-import { useEffect, useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  StatusBar,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-const client = new pahoMqtt.Client(
-  "broker.hivemq.com",
-  Number(8000),
-  `mqtt-random-${parseInt(Math.random() * 100)}`
-);
-
-export default function App() {
-  const [newTopic, setNewTopic] = useState("");
-  const [subscribedTopics, setSubscribedTopics] = useState([
+  const [subscribe, setSubscribe] = useState([
     { name: "hc/temp", messages: [] },
+
   ]);
-  const onMessage = (data) => {
-    console.log(subscribedTopics);
-    const foundIndex = subscribedTopics.findIndex(
-      (x) => x.name == data.destinationName
+  const onMessage = (value) => {
+    console.log(subscribe);
+    const foundIndex = subscribe.findIndex(
+      (x) => x.name == value.destinationName
     );
     console.log(foundIndex);
     if (foundIndex != -1) {
-      const cpy = [...subscribedTopics];
+      const cpy = [...subscribe];
       cpy[foundIndex].messages.push({
-        value: data.payloadString,
+        value: value.payloadString,
         date: new Date(),
       });
       console.log(cpy);
+      setSubscribe(cpy);
 
-      setSubscribedTopics(cpy);
     }
+
+
   };
+
   client.onMessageArrived = onMessage;
   useEffect(() => {
     client.connect({
       onSuccess: () => {
         console.log("connected succefully");
-        subscribedTopics.forEach((el) => client.subscribe(el.name));
+        subscribe.forEach((el) => client.subscribe(el.name));
+
       },
       onFailure: () => {
         console.log("Connection failed");
@@ -179,41 +57,63 @@ export default function App() {
     });
   }, []);
 
-  const [msg, setMsg] = useState("initial msg");
 
 
-   return (
-     <ScrollView style={{ marginTop: StatusBar.currentHeight }}>
-           <TextInput
-             style={{ borderWidth: 1, width: "80%", borderRadius: 10, margin: 5, alignSelf: "center" }}
-             onChangeText={(t) => setNewTopic(t)}
-           ></TextInput>
-           <TouchableOpacity
-             style={{ backgroundColor: "brown", padding: 10, marginRight: 20, marginLeft: 20, borderRadius: 10 }}
-             onPress={() => {
-               setSubscribedTopics((current) => [
-                 ...current,
-                 { name: newTopic, messages: [] },
-               ]);
- 
-               client.subscribe(newTopic);
-             }}
-           >
-             <Text style={{ color: "white", fontSize: 16, textAlign: "center" }}>Subscribe to new topic</Text>
-           </TouchableOpacity>
-         
-           <StatusBar style="auto" />
-         </ScrollView>
-         ); 
+  const gettemps = async () => {
+    try {
+      const response = await fetch(`http://192.168.1.15:8080/datatemp`);
+      const json = await response.json();
+      console.log(json.templist)
+      setSubscribe(json.templist);
+
+    } catch (error) {
+      console.error(error);
+
+    }
+  }
+  useEffect(() => {
+    gettemps();
+  }, []);
+
+  return (
+    <ScrollView style={styles.container} >
+      <Text style={{ fontSize: 40, textAlign: 'center', color: "darkturquoise", marginBottom: 50 }}>Real Time Values  </Text>
+      {subscribe.map((el, i) => (
+        <View key={i}>
+          {el.messages.map((value, index) => (
+            <View key={index}>
+
+              <Image style={{ width: 120, height: 120, }} source={require("../assets/temperature.png")} />
+              <Text style={{ fontSize: 15 }}> {value.value}</Text>
+              <Text style={{ flexDirection: "row", marginLeft: 50 }}> Date:
+                {new Date(value.date).toLocaleDateString() +
+                  " " +
+                  new Date(value.date).toLocaleTimeString()}
+              </Text>
+
+            </View>
+          ))}
+        </View>
+      ))}
+    </ScrollView>
+  )
 }
+
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "column",
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    padding: '2%',
   },
+  Liste1: {
+    flexDirection: "row",
+    marginTop: 50,
+
+  }
 
 });
- */
+
+
+export default Temp
+

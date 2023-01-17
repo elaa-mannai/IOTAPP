@@ -4,7 +4,7 @@ var con = mysql.createConnection({
   database: "hc",
   host: "localhost",
   user: "root",
-  password: "admin",
+  password: "ADMIN",
 });
 
 con.connect(function (err) {
@@ -65,10 +65,12 @@ function insertFrequence(data) {
       console.log("1 record inserted into pression");
     });
   }
+
+
 module.exports = {
   insertTemperature,
   inserto2,
   insertFrequence,
   insertPression,
-  insertSteps
+  insertSteps,
 };
